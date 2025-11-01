@@ -1,7 +1,7 @@
-function [fids spects] = mrs_readJmruiTXT( fileName )
+function [fids, spects, info] = mrs_readJmruiTXT( fileName )
 % MRS_READJMRUITXT reads jMRUI output MRS data file in .txt format 
 %
-% [fids spects] = mrs_readJmruiTxt( fileName )
+% [fids spects info] = mrs_readJmruiTxt( fileName )
 %
 % ARGS :
 % fileName = name of data file 
@@ -9,9 +9,10 @@ function [fids spects] = mrs_readJmruiTXT( fileName )
 % RETURNS:
 % fids = FIDs 
 % spects = spectra 
+% info = header file information
 %
 % EXAMPLE: 
-% >> [fids spects] = mrs_readJmruiTXT('sub1.txt');
+% >> [fids spects info] = mrs_readJmruiTXT('sub1.txt');
 %
 % REFERENCE: 
 % jMRUI software : http://www.mrui.uab.es/mrui/mrui_Overview.shtml
@@ -20,6 +21,9 @@ function [fids spects] = mrs_readJmruiTXT( fileName )
 % PLACE  : Sir Peter Mansfield Magnetic Resonance Centre (SPMMRC)
 %
 % Copyright (c) 2013, University of Nottingham. All rights reserved.
+%
+% 2019-02-14, Fred Tam (Sunnybrook Research Institute): Added info output,
+%   fixed blank dataset output.
 
 	[~,~,ext]=fileparts(fileName);    
 	if isempty(ext)==1
@@ -30,42 +34,62 @@ function [fids spects] = mrs_readJmruiTXT( fileName )
 	content=textscan(fid,'%s','delimiter','\n');   
 	fclose(fid);
     
+    % .txt is ambiguous. Check for magic string.
+    if strcmp('jMRUI Data Textfile', content{1}{1}) == 0
+        error('%s does not appear to be a jMRUI Data Textfile\n', fileName);
+    end
+
 	no_lines=size(content{1});
     sig_c = 0;        
 	for i=1:no_lines 
         
-        line=content{1}{i};    
-        sample_ind = strfind(line,'PointsInDataset');
-        num_ind = strfind(line,'DatasetsInFile');
-        sig_ind = strfind(line,'Signal'); 
+        line=content{1}{i};
         
-        if ~isempty(sample_ind) 
-            str_temp = textscan(line, '%s', 'delimiter', ':');  
-            sample= str2double(str_temp{1}{2});   
-        end
-        
-        if ~isempty(num_ind) 
-            str_temp = textscan(line, '%s', 'delimiter', ':');  
-            num= str2double(str_temp{1}{2});   
-            
-            fids = zeros(sample,num);
-            spects = zeros(sample,num);
+        % Header fields (except the column headers) are all delimited by :
+        if strfind(line, ':')
+            str_temp = textscan(line, '%s', 'delimiter', ':');
 
-        end
+            % Populate the info with known values and whatever else is there
+            switch str_temp{1}{1}
+            case {'PointsInDataset', 'DatasetsInFile', 'SamplingInterval', ...
+                'ZeroOrderPhase', 'BeginTime', 'TransmitterFrequency', ...
+                'MagneticField', 'TypeOfNucleus'}
+
+                info.(str_temp{1}{1}) = str2double(str_temp{1}{2});
+            otherwise
+                if length(str_temp{1}) > 1
+                    info.(str_temp{1}{1}) = str_temp{1}{2};
+                else
+                    info.(str_temp{1}{1}) = [];
+                end
+            end
+
+            % Extract a few things we need for initialization too
+            switch str_temp{1}{1}
+            case 'PointsInDataset'
+                sample = info.PointsInDataset;
+            case 'DatasetsInFile'
+                num = info.DatasetsInFile;
+
+                % Assuming sample is always defined before num at the file start
+                % A separate header scan would be safer, but whatever
+                fids = zeros(sample,num);
+                spects = zeros(sample,num);
+            end
         
-                         
-        if ~isempty(sig_ind) 
-            sig_c = sig_c+1; 
+        % Delimiter for beginning of next signal (just 'Signal' matches header)
+        elseif regexp(line, 'Signal \d+ out of \d+ in file')
+            sig_c = sig_c+1;
             p=0;
-        end  
-        
-        if sig_c > 1 && isempty(sig_ind) 
+
+        % Looks like data (close enough)
+        elseif sig_c >= 1 && length(regexp(line, '([+-]?[\d\.]+([Ee][+-]?\d+)?|[Nn][Aa][Nn]|[+-]?[Ii][Nn][Ff])')) >= 4
             p = p+1;
-            str_temp = textscan(line, '%s', 'delimiter', '\t');                     
-            fids(p,sig_c-1)= str2double(str_temp{1}{1}) + 1i*str2double(str_temp{1}{2});
-            spects(p,sig_c-1)= str2double(str_temp{1}{3}) + 1i*str2double(str_temp{1}{4});
+            str_temp = textscan(line, '%f');
+            fids(p,sig_c)= str_temp{1}(1) + 1i*str_temp{1}(2);
+            spects(p,sig_c)= str_temp{1}(3) + 1i*str_temp{1}(4);
         end
-                              
-	end 
+
+	end
 end
 

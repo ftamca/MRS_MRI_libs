@@ -18,7 +18,10 @@ function shift_Hz = mrs_ppm2Hz( shift_ppm , transmit_freq )
 % PLACE  : Sir Peter Mansfield Magnetic Resonance Centre (SPMMRC)
 %
 % Copyright (c) 2013, University of Nottingham. All rights reserved.
+%
+% 2019-02-14 Fred Tam (Sunnybrook Research Institute): Rather than absolute
+%       frequency, it makes more sense to convert ppm to relative frequency
 
-    shift_Hz = shift_ppm*10^(-6)*transmit_freq+transmit_freq;
+    shift_Hz = shift_ppm*10^(-6)*transmit_freq;
 end
 
