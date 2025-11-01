@@ -4,10 +4,10 @@ MR_libs
 
 These are MATLAB libraries for post-processing, analysing and simulating Magnetic Resonance Spectroscopy and Imaging (MRS &amp; MRI) data.
 
-This fork contains my mods to support MRS thermometry at SRI, MRUI data import, more apodizing filter types, Hz-points-ppm conversion.
-From Sept. 2020. Code used in:
+**This fork contains my mods to support MRS thermometry at SRI, MRUI data import, more apodizing filter types, Hz-points-ppm conversion.
+From Sept. 2020. Code used in:**
 
-Zou Y, Heyn C, Grigorian A, Tam F, Andreazza AC, Graham SJ, Maclntosh BJ, Goldstein BI. Measuring Brain Temperature in Youth Bipolar Disorder Using a Novel Magnetic Resonance Imaging Approach: A Proof-of-concept Study. Curr Neuropharmacol. 2023;21(6):1355-1366. doi: 10.2174/1570159X21666230322090754. PMID: 36946483; PMCID: PMC10324328.
+**Zou Y, Heyn C, Grigorian A, Tam F, Andreazza AC, Graham SJ, Maclntosh BJ, Goldstein BI. Measuring Brain Temperature in Youth Bipolar Disorder Using a Novel Magnetic Resonance Imaging Approach: A Proof-of-concept Study. Curr Neuropharmacol. 2023;21(6):1355-1366. doi: 10.2174/1570159X21666230322090754. PMID: 36946483; PMCID: PMC10324328.**
 
 ### Configuration
 
@@ -29,7 +29,8 @@ Data files & header files are required to be added to MATLAB path.
   * **mrs_readLcmodelTABLE.m**   : reads the metabolite absolute and relative concentration and their SDs from the LCModel output .table file 
   * **mrs_readLcmodelCOORD.m**   : reads the LCmodel output .coord file, which contains the coordinates of all curves on the one-page output
   * **mrs_readLcmodelRAW.m** : reads LCModel output .RAW file which contains time domain data of each metabolite spectrum
-  * **mrs_readJmruiTXT.m**   : reads .txt MRS data file from jMRUI
+  * **mrs_readJmruiTXT.m**   : reads .txt MRS data file from jMRUI **(changed)**
+  * **mrs_readMRUI.m**   : reads .mrui MRS data file from jMRUI **(new)**
   * **mrs_writeSDAT.m** : writes MRS data to Philips .SDAT file
   * **mrs_writeSPAR.m** : writes MRS header information to Philips .SPAR file
   * **mrs_editSPAR.m**  : edits Philips .SPAR file
@@ -38,7 +39,7 @@ Data files & header files are required to be added to MATLAB path.
 * postprocess/
   * **mrs_truncate.m**  : truncates points from the end of spectra
   * **mrs_zerofill.m**  : fills zeros to the end of spectra
-  * **mrs_apod.m**      : applies line-broadening filter 
+  * **mrs_apod.m**      : applies line-broadening filter **(changed)**
   * **mrs_fft.m**       : applies fourier transformation 
   * **mrs_ifft.m**      : applies inverse fourier transformation 
   * **mrs_rephase.m**   : rephases spectra with specified phase value  
@@ -62,10 +63,13 @@ Data files & header files are required to be added to MATLAB path.
   * **mrs_lorentzFit.m**      : fits data with a Lorenztian function by minimising the squared error
   * **mrs_lorentzFun.m**      : defines the Lorentzian function
   * **mrs_gaussianFit.m**     : fits data with a Gaussian function by minimising the squared error  
-  * **mrs_gaussianFun.m**     : defines Gaussian function function   
+  * **mrs_gaussianFun.m**     : defines Gaussian function function
+  * **mrs_Hz2points.m**       : converts unit from Hz to points **(new)**
+  * **mrs_Hz2ppm.m**          : converts unit from Hz to ppm **(new)**
   * **mrs_points2Hz.m**       : converts unit from points to Hz
   * **mrs_points2ppm.m**      : converts unit from points to ppm
-  * **mrs_ppm2Hz.m**          : converts unit from ppm to Hz
+  * **mrs_ppm2Hz.m**          : converts unit from ppm to Hz **(changed)**
+  * **mrs_ppm2points.m**      : converts unit from ppm to points **(new)**
   * **mrs_plotSpectra.m**     : displays spectra 
   * **mrs_plotBASISspectra.m**: displays spectra in LCmodel .basis file  
   * **mrs_viewCSI.m**         : displays a spectrum from a selected voxel      
@@ -74,6 +78,7 @@ Data files & header files are required to be added to MATLAB path.
   * **mrs_T2corr.m**          : applies T2 correction 
   * **mrs_calFWHM.m**         : calculates the full width at haflf maximum height of the peak of interest  
   * **mrs_calTemp.m**         : calculates the temperature based on chemical shift difference of the water resonance and the temperature-independent reference resonance
+  * **mrs_calTempFred.m**     : calculates the temperature based on chemical shift difference of the water resonance and the temperature-independent reference resonance - fully self contained script starting from RDA or MRUI file, used for paper **(new)**
 * voxel_planner/
   * **create_stdMaskvoxel.m&.fig** : allows you to plan MRS voxel size & location with a guid of MR structural images of a standard brain (MNI152_T1_1mm_brain.nii.gz) and functional region masks (HarvardOxford-cort-maxprob-thr0-1mm.nii.gz) 
   
