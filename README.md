@@ -4,6 +4,10 @@ MR_libs
 
 These are MATLAB libraries for post-processing, analysing and simulating Magnetic Resonance Spectroscopy and Imaging (MRS &amp; MRI) data.
 
+This fork contains my mods to support MRS thermometry at SRI, MRUI data import, more apodizing filter types, Hz-points-ppm conversion.
+From Sept. 2020. Code used in:
+Zou Y, Heyn C, Grigorian A, Tam F, Andreazza AC, Graham SJ, Maclntosh BJ, Goldstein BI. Measuring Brain Temperature in Youth Bipolar Disorder Using a Novel Magnetic Resonance Imaging Approach: A Proof-of-concept Study. Curr Neuropharmacol. 2023;21(6):1355-1366. doi: 10.2174/1570159X21666230322090754. PMID: 36946483; PMCID: PMC10324328.
+
 ### Configuration
 
 Data files & header files are required to be added to MATLAB path.  
